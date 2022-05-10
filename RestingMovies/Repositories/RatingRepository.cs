@@ -7,24 +7,12 @@ namespace RestingMovies.Api.Repositories;
 public class RatingRepository : IRatingRepository
 {
     private readonly RatingsDbContext _dbContext;
-
+    
     public RatingRepository(RatingsDbContext dbContext)
     {
         _dbContext = dbContext;
     }
-
-    public async Task SaveRating(Rating rating)
-    {
-        await _dbContext.Ratings.AddAsync(rating);
-        await _dbContext.SaveChangesAsync();
-    }
-
-    public async Task DeleteRating(Rating rating)
-    {
-        _dbContext.Ratings.Remove(rating);
-        await _dbContext.SaveChangesAsync();
-    }
-
+    
     public async Task<List<Rating>> GetAllRatings()
     {
         return await _dbContext.Ratings.ToListAsync();
@@ -38,5 +26,17 @@ public class RatingRepository : IRatingRepository
     public async Task<List<Rating>> GetRatingsByMovieId(int movieId)
     {
         return await _dbContext.Ratings.Where(x => x.MovieId == movieId).ToListAsync();
+    }
+
+    public async Task SaveRating(Rating rating)
+    {
+        await _dbContext.Ratings.AddAsync(rating);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteRating(Rating rating)
+    {
+        _dbContext.Ratings.Remove(rating);
+        await _dbContext.SaveChangesAsync();
     }
 }

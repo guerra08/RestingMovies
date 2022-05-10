@@ -1,10 +1,18 @@
-﻿using RestingMovies.Api.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using RestingMovies.Api.Entities;
+using RestingMovies.Api.Persistence;
 using RestingMovies.Api.Repositories;
 
 namespace RestingMovies.Api.Endpoints;
 
 public static class RatingEndpoints
 {
+    public static void AddRatingServices(this IServiceCollection services)
+    {
+        services.AddDbContext<RatingsDbContext>(c => c.UseInMemoryDatabase("RestingMovies"));
+        services.AddTransient<IRatingRepository, RatingRepository>();
+    }
+    
     public static void MapRatingEndpoints(this WebApplication app)
     {
         app.MapPost("/ratings", HandlePostRating)

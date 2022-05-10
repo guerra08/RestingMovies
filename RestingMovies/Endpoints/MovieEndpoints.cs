@@ -1,10 +1,18 @@
-﻿using RestingMovies.Api.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using RestingMovies.Api.Entities;
+using RestingMovies.Api.Persistence;
 using RestingMovies.Api.Repositories;
 
 namespace RestingMovies.Api.Endpoints;
 
 public static class MovieEndpoints
 {
+    public static void AddMovieServices(this IServiceCollection services)
+    {
+        services.AddDbContext<MoviesDbContext>(c => c.UseInMemoryDatabase("RestingMovies"));
+        services.AddTransient<IMovieRepository, MovieRepository>();
+    }
+    
     public static void MapMovieEndpoints(this WebApplication app)
     {
         app.MapPost("/movie", HandlePostMovie)

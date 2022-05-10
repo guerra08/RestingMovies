@@ -4,9 +4,9 @@ namespace RestingMovies.Api.Repositories;
 
 public interface IMovieRepository
 {
-    Task<List<Movie>> GetAllMovies();
-    Task<Movie?> GetMovieById(int id);
-    Task SaveMovie(Movie movie);
-    Task<List<Movie>> GetMoviesByName(string name);
-    Task DeleteMovie(Movie movie);
+    public Task<List<Movie>> GetAllMovies();
+    public Task<Movie?> GetMovieById(int id);
+    public Task<List<Movie>> GetMoviesByName(string name);
+    public Task SaveMovie(Movie movie);
+    public Task DeleteMovie(Movie movie);
 }
