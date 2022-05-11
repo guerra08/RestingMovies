@@ -11,7 +11,10 @@ public static class MovieEndpoints
     public static void AddMovieServices(this IServiceCollection services)
     {
         services.AddDbContext<RestingMoviesDbContext>(
-            c => c.UseSqlite("Data Source=restingmovies.db"));
+            c =>
+            {
+                c.UseSqlite("Data Source=restingmovies.db");
+            });
         services.AddTransient<IMovieRepository, MovieRepository>();
     }
     
