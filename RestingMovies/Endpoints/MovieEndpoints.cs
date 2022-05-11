@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RestingMovies.Api.Entities;
+using RestingMovies.Api.Contracts.Requests;
+using RestingMovies.Api.Mappings;
 using RestingMovies.Api.Persistence;
 using RestingMovies.Api.Repositories;
 
@@ -28,23 +29,24 @@ public static class MovieEndpoints
             .WithName("DeleteMovieById");
     }
 
-    internal static async Task<IResult> HandlePostMovie(IMovieRepository movieRepository, Movie movie)
+    internal static async Task<IResult> HandlePostMovie(IMovieRepository movieRepository, CreateMovieRequest request)
     {
+        var movie = request.ToMovie();
         await movieRepository.SaveMovie(movie);
-        return Results.Created($"/movie/{movie.Id}", movie);
+        return Results.Created($"/movie/{movie.Id}", movie.ToMovieResponse());
     }
 
     internal static async Task<IResult> HandleGetMovies(IMovieRepository movieRepository, string? name)
     {
         var movies = name is null ? await movieRepository.GetAllMovies() : await movieRepository.GetMoviesByName(name);
-        return Results.Ok(movies);
+        return Results.Ok(movies.Select(m => m.ToMovieResponse()));
     }
 
     internal static async Task<IResult> HandleGetMovieById(IMovieRepository movieRepository, int id)
     {
         return await movieRepository.GetMovieById(id) switch
         {
-            { } movie => Results.Ok(movie),
+            { } movie => Results.Ok(movie.ToMovieResponse()),
             null => Results.NotFound()
         };
     }

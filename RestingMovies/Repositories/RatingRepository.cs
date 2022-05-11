@@ -13,7 +13,7 @@ public class RatingRepository : IRatingRepository
         _dbContext = dbContext;
     }
     
-    public async Task<List<Rating>> GetAllRatings()
+    public async Task<IEnumerable<Rating>> GetAllRatings()
     {
         return await _dbContext.Ratings.ToListAsync();
     }
@@ -23,7 +23,7 @@ public class RatingRepository : IRatingRepository
         return await _dbContext.Ratings.FirstOrDefaultAsync(r => r.Id == ratingId);
     }
 
-    public async Task<List<Rating>> GetRatingsByMovieId(int movieId)
+    public async Task<IEnumerable<Rating>> GetRatingsByMovieId(int movieId)
     {
         return await _dbContext.Ratings.Where(x => x.MovieId == movieId).ToListAsync();
     }

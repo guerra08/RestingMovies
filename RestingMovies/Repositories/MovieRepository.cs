@@ -13,19 +13,19 @@ public class MovieRepository : IMovieRepository
         _dbContext = dbContext;
     }
 
-    public async Task<List<Movie>> GetAllMovies()
+    public async Task<IEnumerable<Movie>> GetAllMovies()
     {
         return await _dbContext.Movies.ToListAsync();
     }
 
-    public Task<Movie?> GetMovieById(int id)
+    public async Task<Movie?> GetMovieById(int id)
     {
-        return _dbContext.Movies.FirstOrDefaultAsync(x => x.Id == id);
+        return await _dbContext.Movies.FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public Task<List<Movie>> GetMoviesByName(string name)
+    public async Task<IEnumerable<Movie>> GetMoviesByName(string name)
     {
-        return _dbContext.Movies.Where(x => x.Name.ToLower().Equals(name.ToLower())).ToListAsync();
+        return await _dbContext.Movies.Where(x => x.Name.ToLower().Equals(name.ToLower())).ToListAsync();
     }
 
     public async Task SaveMovie(Movie movie)

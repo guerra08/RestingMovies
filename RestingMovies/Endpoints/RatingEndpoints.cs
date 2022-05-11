@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RestingMovies.Api.Entities;
+using RestingMovies.Api.Contracts.Requests;
+using RestingMovies.Api.Mappings;
 using RestingMovies.Api.Persistence;
 using RestingMovies.Api.Repositories;
 
@@ -26,19 +27,22 @@ public static class RatingEndpoints
     }
 
     internal static async Task<IResult> HandlePostRating(IRatingRepository ratingRepository,
-        Rating rating)
+        CreateRatingRequest request)
     {
+        var rating = request.ToRating();
         await ratingRepository.SaveRating(rating);
-        return Results.Created($"/rating/{rating.Id}", rating);
+        return Results.Created($"/rating/{rating.Id}", rating.ToRatingResponse());
     }
 
     internal static async Task<IResult> HandleGetRatings(IRatingRepository ratingRepository)
     {
-        return Results.Ok(await ratingRepository.GetAllRatings());
+        var ratings = await ratingRepository.GetAllRatings();
+        return Results.Ok(ratings.Select(x => x.ToRatingResponse()));
     }
 
     internal static async Task<IResult> HandleGetRatingsOfMovie(IRatingRepository ratingRepository, int movieId)
     {
-        return Results.Ok(await ratingRepository.GetRatingsByMovieId(movieId));
+        var ratings = await ratingRepository.GetRatingsByMovieId(movieId);
+        return Results.Ok(ratings.Select(x => x.ToRatingResponse()));
     }
 }

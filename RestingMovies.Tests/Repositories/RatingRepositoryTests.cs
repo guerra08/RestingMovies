@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RestingMovies.Api.Entities;
@@ -50,7 +51,7 @@ public class RatingRepositoryTests
         await ratingsDbContext.AddAsync(rating);
         await ratingsDbContext.SaveChangesAsync();
 
-        var ratings = await repository.GetAllRatings();
+        var ratings = (await repository.GetAllRatings()).ToList();
 
         Assert.IsTrue(ratings.Count > 0);
     }

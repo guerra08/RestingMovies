@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -89,7 +90,7 @@ public class MovieRepositoryTests
 
         var moviesFromDb = await repository.GetAllMovies();
 
-        Assert.AreEqual(2, moviesFromDb.Count);
+        Assert.AreEqual(2, moviesFromDb.ToList().Count);
     }
 
     [TestMethod]
@@ -107,7 +108,7 @@ public class MovieRepositoryTests
         await moviesDbContext.Movies.AddRangeAsync(movies);
         await moviesDbContext.SaveChangesAsync();
 
-        var moviesFromDb = await repository.GetMoviesByName("first");
+        var moviesFromDb = (await repository.GetMoviesByName("first")).ToList();
         var foundMovie = moviesFromDb[0];
 
         Assert.AreEqual(1, moviesFromDb.Count);
