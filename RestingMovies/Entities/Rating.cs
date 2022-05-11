@@ -7,8 +7,6 @@ public class Rating
     public int Id { get; set; }
     public int Score { get; set; }
     public string Text { get; set; }
-
     public int MovieId { get; set; }
-
-    [ForeignKey("MovieId")] public Movie Movie { get; set; }
+    public virtual Movie Movie { get; set; }
 }

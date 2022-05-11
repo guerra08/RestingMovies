@@ -11,16 +11,16 @@ namespace RestingMovies.Tests.Repositories;
 [TestClass]
 public class RatingRepositoryTests
 {
-    private readonly DbContextOptions<RatingsDbContext> _dbContextOptions;
+    private readonly DbContextOptions<RestingMoviesDbContext> _dbContextOptions;
 
     public RatingRepositoryTests()
     {
-        _dbContextOptions = new DbContextOptionsBuilder<RatingsDbContext>()
+        _dbContextOptions = new DbContextOptionsBuilder<RestingMoviesDbContext>()
             .UseInMemoryDatabase("RestingMovies_Tests")
             .Options;
     }
 
-    private IRatingRepository GetRatingRepository(RatingsDbContext dbContext)
+    private IRatingRepository GetRatingRepository(RestingMoviesDbContext dbContext)
     {
         dbContext.Database.EnsureDeleted();
         dbContext.Database.EnsureCreated();
@@ -30,7 +30,7 @@ public class RatingRepositoryTests
     [TestMethod]
     public async Task RatingRepository_ShouldSaveRating()
     {
-        var ratingsDbContext = new RatingsDbContext(_dbContextOptions);
+        var ratingsDbContext = new RestingMoviesDbContext(_dbContextOptions);
         var repository = GetRatingRepository(ratingsDbContext);
 
         var rating = new Rating { Score = 5, Text = "Very nice!", MovieId = 1 };
@@ -43,7 +43,7 @@ public class RatingRepositoryTests
     [TestMethod]
     public async Task RatingRepository_ShouldGetAllRatings()
     {
-        var ratingsDbContext = new RatingsDbContext(_dbContextOptions);
+        var ratingsDbContext = new RestingMoviesDbContext(_dbContextOptions);
         var repository = GetRatingRepository(ratingsDbContext);
 
         var rating = new Rating { Score = 5, Text = "Very nice!", MovieId = 1 };

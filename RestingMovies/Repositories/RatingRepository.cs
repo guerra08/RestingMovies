@@ -6,9 +6,9 @@ namespace RestingMovies.Api.Repositories;
 
 public class RatingRepository : IRatingRepository
 {
-    private readonly RatingsDbContext _dbContext;
+    private readonly RestingMoviesDbContext _dbContext;
     
-    public RatingRepository(RatingsDbContext dbContext)
+    public RatingRepository(RestingMoviesDbContext dbContext)
     {
         _dbContext = dbContext;
     }

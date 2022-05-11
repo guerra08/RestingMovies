@@ -10,7 +10,8 @@ public static class RatingEndpoints
 {
     public static void AddRatingServices(this IServiceCollection services)
     {
-        services.AddDbContext<RatingsDbContext>(c => c.UseInMemoryDatabase("RestingMovies"));
+        services.AddDbContext<RestingMoviesDbContext>(
+            c => c.UseSqlite("Data Source=restingmovies.db"));
         services.AddTransient<IRatingRepository, RatingRepository>();
     }
     

@@ -10,22 +10,23 @@ public static class MovieEndpoints
 {
     public static void AddMovieServices(this IServiceCollection services)
     {
-        services.AddDbContext<MoviesDbContext>(c => c.UseInMemoryDatabase("RestingMovies"));
+        services.AddDbContext<RestingMoviesDbContext>(
+            c => c.UseSqlite("Data Source=restingmovies.db"));
         services.AddTransient<IMovieRepository, MovieRepository>();
     }
     
     public static void MapMovieEndpoints(this WebApplication app)
     {
-        app.MapPost("/movie", HandlePostMovie)
+        app.MapPost("/movies", HandlePostMovie)
             .WithName("CreateMovie");
 
-        app.MapGet("/movie", HandleGetMovies)
+        app.MapGet("/movies", HandleGetMovies)
             .WithName("GetMovies");
 
-        app.MapGet("/movie/{id}", HandleGetMovieById)
+        app.MapGet("/movies/{id}", HandleGetMovieById)
             .WithName("GetMovieById");
 
-        app.MapDelete("/movie/{id}", HandleDeleteMovieById)
+        app.MapDelete("/movies/{id}", HandleDeleteMovieById)
             .WithName("DeleteMovieById");
     }
 

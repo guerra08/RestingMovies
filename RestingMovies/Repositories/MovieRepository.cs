@@ -6,9 +6,9 @@ namespace RestingMovies.Api.Repositories;
 
 public class MovieRepository : IMovieRepository
 {
-    private readonly MoviesDbContext _dbContext;
+    private readonly RestingMoviesDbContext _dbContext;
 
-    public MovieRepository(MoviesDbContext dbContext)
+    public MovieRepository(RestingMoviesDbContext dbContext)
     {
         _dbContext = dbContext;
     }

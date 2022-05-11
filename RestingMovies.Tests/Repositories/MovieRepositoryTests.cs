@@ -12,16 +12,16 @@ namespace RestingMovies.Tests.Repositories;
 [TestClass]
 public class MovieRepositoryTests
 {
-    private readonly DbContextOptions<MoviesDbContext> _dbContextOptions;
+    private readonly DbContextOptions<RestingMoviesDbContext> _dbContextOptions;
 
     public MovieRepositoryTests()
     {
-        _dbContextOptions = new DbContextOptionsBuilder<MoviesDbContext>()
+        _dbContextOptions = new DbContextOptionsBuilder<RestingMoviesDbContext>()
             .UseInMemoryDatabase("RestingMovies_Tests")
             .Options;
     }
 
-    private IMovieRepository GetMovieRepository(MoviesDbContext dbContext)
+    private IMovieRepository GetMovieRepository(RestingMoviesDbContext dbContext)
     {
         dbContext.Database.EnsureDeleted();
         dbContext.Database.EnsureCreated();
@@ -31,7 +31,7 @@ public class MovieRepositoryTests
     [TestMethod]
     public async Task MovieRepository_ShouldSaveMovie()
     {
-        var moviesDbContext = new MoviesDbContext(_dbContextOptions);
+        var moviesDbContext = new RestingMoviesDbContext(_dbContextOptions);
         var repository = GetMovieRepository(moviesDbContext);
 
         var movie = new Movie
@@ -53,7 +53,7 @@ public class MovieRepositoryTests
     [TestMethod]
     public async Task MovieRepository_ShouldGetById()
     {
-        var moviesDbContext = new MoviesDbContext(_dbContextOptions);
+        var moviesDbContext = new RestingMoviesDbContext(_dbContextOptions);
         var repository = GetMovieRepository(moviesDbContext);
 
         var movie = new Movie
@@ -76,7 +76,7 @@ public class MovieRepositoryTests
     [TestMethod]
     public async Task MovieRepository_ShouldGetAllMovies()
     {
-        var moviesDbContext = new MoviesDbContext(_dbContextOptions);
+        var moviesDbContext = new RestingMoviesDbContext(_dbContextOptions);
         var repository = GetMovieRepository(moviesDbContext);
 
         var movies = new List<Movie>
@@ -96,7 +96,7 @@ public class MovieRepositoryTests
     [TestMethod]
     public async Task MovieRepository_ShouldGetAllMoviesByName()
     {
-        var moviesDbContext = new MoviesDbContext(_dbContextOptions);
+        var moviesDbContext = new RestingMoviesDbContext(_dbContextOptions);
         var repository = GetMovieRepository(moviesDbContext);
 
         var movies = new List<Movie>
@@ -119,7 +119,7 @@ public class MovieRepositoryTests
     [TestMethod]
     public async Task MovieRepository_ShouldDeleteMovie()
     {
-        var moviesDbContext = new MoviesDbContext(_dbContextOptions);
+        var moviesDbContext = new RestingMoviesDbContext(_dbContextOptions);
         var repository = GetMovieRepository(moviesDbContext);
 
         var movie = new Movie
