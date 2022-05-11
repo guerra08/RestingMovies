@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RestingMovies.Api.Entities;
 using RestingMovies.Api.Persistence;
 using RestingMovies.Api.Repositories;
+using FluentAssertions;
 
 namespace RestingMovies.Tests.Repositories;
 
@@ -44,10 +45,10 @@ public class MovieRepositoryTests
 
         await repository.SaveMovie(movie);
 
-        Assert.AreEqual("Saving Private Ryan", movie.Name);
-        Assert.AreEqual("Steven Spielberg", movie.Director);
-        Assert.AreEqual("War", movie.Genre);
-        Assert.AreEqual(1998, movie.ReleaseYear);
+        movie.Name.Should().Be("Saving Private Ryan");
+        movie.Director.Should().Be("Steven Spielberg");
+        movie.Genre.Should().Be("War");
+        movie.ReleaseYear.Should().Be(1998);
     }
 
     [TestMethod]
@@ -69,8 +70,8 @@ public class MovieRepositoryTests
 
         var foundMovie = await repository.GetMovieById(movie.Id);
 
-        Assert.IsNotNull(foundMovie);
-        Assert.AreEqual(movie.Id, foundMovie.Id);
+        foundMovie.Should().NotBeNull();
+        foundMovie?.Id.Should().Be(movie.Id);
     }
 
     [TestMethod]
@@ -90,7 +91,7 @@ public class MovieRepositoryTests
 
         var moviesFromDb = await repository.GetAllMovies();
 
-        Assert.AreEqual(2, moviesFromDb.ToList().Count);
+        moviesFromDb.ToList().Count.Should().Be(2);
     }
 
     [TestMethod]
@@ -110,10 +111,10 @@ public class MovieRepositoryTests
 
         var moviesFromDb = (await repository.GetMoviesByName("first")).ToList();
         var foundMovie = moviesFromDb[0];
-
-        Assert.AreEqual(1, moviesFromDb.Count);
-        Assert.IsNotNull(foundMovie);
-        Assert.AreEqual("First", foundMovie.Name);
+        
+        moviesFromDb.Count.Should().Be(1);
+        foundMovie.Should().NotBeNull();
+        foundMovie.Name.Should().Be("First");
     }
 
     [TestMethod]
@@ -137,6 +138,6 @@ public class MovieRepositoryTests
 
         var count = await moviesDbContext.Movies.CountAsync();
 
-        Assert.AreEqual(0, count);
+        count.Should().Be(0);
     }
 }
