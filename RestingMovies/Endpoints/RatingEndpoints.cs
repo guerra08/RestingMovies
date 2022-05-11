@@ -6,9 +6,9 @@ using RestingMovies.Api.Repositories;
 
 namespace RestingMovies.Api.Endpoints;
 
-public static class RatingEndpoints
+public class RatingEndpoints : IEndpointConfiguration
 {
-    public static void AddRatingServices(this IServiceCollection services)
+    public void AddServices(IServiceCollection services)
     {
         services.AddDbContext<RestingMoviesDbContext>(
             c =>
@@ -17,8 +17,8 @@ public static class RatingEndpoints
             });
         services.AddTransient<IRatingRepository, RatingRepository>();
     }
-    
-    public static void MapRatingEndpoints(this WebApplication app)
+
+    public void MapEndpoints(WebApplication app)
     {
         app.MapPost("/ratings", HandlePostRating)
             .WithName("CreateRating");
@@ -30,7 +30,7 @@ public static class RatingEndpoints
             .WithName("GetRatingsOfMovie");
     }
 
-    internal static async Task<IResult> HandlePostRating(IRatingRepository ratingRepository,
+    internal async Task<IResult> HandlePostRating(IRatingRepository ratingRepository,
         CreateRatingRequest request)
     {
         var rating = request.ToRating();
@@ -38,13 +38,13 @@ public static class RatingEndpoints
         return Results.Created($"/rating/{rating.Id}", rating.ToRatingResponse());
     }
 
-    internal static async Task<IResult> HandleGetRatings(IRatingRepository ratingRepository)
+    internal async Task<IResult> HandleGetRatings(IRatingRepository ratingRepository)
     {
         var ratings = await ratingRepository.GetAllRatings();
         return Results.Ok(ratings.Select(x => x.ToRatingResponse()));
     }
 
-    internal static async Task<IResult> HandleGetRatingsOfMovie(IRatingRepository ratingRepository, int movieId)
+    internal async Task<IResult> HandleGetRatingsOfMovie(IRatingRepository ratingRepository, int movieId)
     {
         var ratings = await ratingRepository.GetRatingsByMovieId(movieId);
         return Results.Ok(ratings.Select(x => x.ToRatingResponse()));

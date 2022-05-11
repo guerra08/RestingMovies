@@ -6,9 +6,9 @@ using RestingMovies.Api.Repositories;
 
 namespace RestingMovies.Api.Endpoints;
 
-public static class MovieEndpoints
+public class MovieEndpoints : IEndpointConfiguration
 {
-    public static void AddMovieServices(this IServiceCollection services)
+    public void AddServices(IServiceCollection services)
     {
         services.AddDbContext<RestingMoviesDbContext>(
             c =>
@@ -17,8 +17,8 @@ public static class MovieEndpoints
             });
         services.AddTransient<IMovieRepository, MovieRepository>();
     }
-    
-    public static void MapMovieEndpoints(this WebApplication app)
+
+    public void MapEndpoints(WebApplication app)
     {
         app.MapPost("/movies", HandlePostMovie)
             .WithName("CreateMovie");
@@ -32,21 +32,21 @@ public static class MovieEndpoints
         app.MapDelete("/movies/{id}", HandleDeleteMovieById)
             .WithName("DeleteMovieById");
     }
-
-    internal static async Task<IResult> HandlePostMovie(IMovieRepository movieRepository, CreateMovieRequest request)
+    
+    internal async Task<IResult> HandlePostMovie(IMovieRepository movieRepository, CreateMovieRequest request)
     {
         var movie = request.ToMovie();
         await movieRepository.SaveMovie(movie);
         return Results.Created($"/movie/{movie.Id}", movie.ToMovieResponse());
     }
 
-    internal static async Task<IResult> HandleGetMovies(IMovieRepository movieRepository, string? name)
+    internal async Task<IResult> HandleGetMovies(IMovieRepository movieRepository, string? name)
     {
         var movies = name is null ? await movieRepository.GetAllMovies() : await movieRepository.GetMoviesByName(name);
         return Results.Ok(movies.Select(m => m.ToMovieResponse()));
     }
 
-    internal static async Task<IResult> HandleGetMovieById(IMovieRepository movieRepository, int id)
+    internal async Task<IResult> HandleGetMovieById(IMovieRepository movieRepository, int id)
     {
         return await movieRepository.GetMovieById(id) switch
         {
@@ -55,7 +55,7 @@ public static class MovieEndpoints
         };
     }
 
-    internal static async Task<IResult> HandleDeleteMovieById(IMovieRepository movieRepository, int id)
+    internal async Task<IResult> HandleDeleteMovieById(IMovieRepository movieRepository, int id)
     {
         var movie = await movieRepository.GetMovieById(id);
         if (movie is null) return Results.NotFound();
