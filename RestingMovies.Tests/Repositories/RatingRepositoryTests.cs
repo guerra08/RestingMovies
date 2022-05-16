@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RestingMovies.Api.Entities;
 using RestingMovies.Api.Persistence;
 using RestingMovies.Api.Repositories;
+using FluentAssertions;
 
 namespace RestingMovies.Tests.Repositories;
 
@@ -37,7 +38,7 @@ public class RatingRepositoryTests
 
         await repository.SaveRating(rating);
 
-        Assert.IsTrue(rating.Id > 0);
+        rating.Id.Should().BeGreaterThan(0);
     }
     
     [TestMethod]
@@ -52,7 +53,7 @@ public class RatingRepositoryTests
         await ratingsDbContext.SaveChangesAsync();
 
         var ratings = (await repository.GetAllRatings()).ToList();
-
-        Assert.IsTrue(ratings.Count > 0);
+        
+        ratings.Count.Should().BeGreaterThan(0);
     }
 }

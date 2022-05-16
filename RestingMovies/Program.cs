@@ -1,11 +1,12 @@
-using RestingMovies.Api.Endpoints;
+using RestingMovies.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddMovieServices();
-builder.Services.AddRatingServices();
+
+// Adds the IEndpointConfiguration Services to the container.
+builder.Services.AddEndpointConfigurations();
 
 var app = builder.Build();
 
@@ -17,7 +18,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapMovieEndpoints();
-app.MapRatingEndpoints();
+// Adds the Endpoints to the application.
+app.UseEndpointConfigurations();
 
 app.Run();
