@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Xunit;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RestingMovies.Api.Entities;
 using RestingMovies.Api.Persistence;
 using RestingMovies.Api.Repositories;
@@ -10,7 +10,6 @@ using FluentAssertions;
 
 namespace RestingMovies.Tests.Repositories;
 
-[TestClass]
 public class MovieRepositoryTests
 {
     private readonly DbContextOptions<RestingMoviesDbContext> _dbContextOptions;
@@ -29,7 +28,7 @@ public class MovieRepositoryTests
         return new MovieRepository(dbContext);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task MovieRepository_ShouldSaveMovie()
     {
         var moviesDbContext = new RestingMoviesDbContext(_dbContextOptions);
@@ -51,7 +50,7 @@ public class MovieRepositoryTests
         movie.ReleaseYear.Should().Be(1998);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task MovieRepository_ShouldGetById()
     {
         var moviesDbContext = new RestingMoviesDbContext(_dbContextOptions);
@@ -74,7 +73,7 @@ public class MovieRepositoryTests
         foundMovie?.Id.Should().Be(movie.Id);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task MovieRepository_ShouldGetAllMovies()
     {
         var moviesDbContext = new RestingMoviesDbContext(_dbContextOptions);
@@ -94,7 +93,7 @@ public class MovieRepositoryTests
         moviesFromDb.ToList().Count.Should().Be(2);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task MovieRepository_ShouldGetAllMoviesByName()
     {
         var moviesDbContext = new RestingMoviesDbContext(_dbContextOptions);
@@ -117,7 +116,7 @@ public class MovieRepositoryTests
         foundMovie.Name.Should().Be("First");
     }
 
-    [TestMethod]
+    [Fact]
     public async Task MovieRepository_ShouldDeleteMovie()
     {
         var moviesDbContext = new RestingMoviesDbContext(_dbContextOptions);

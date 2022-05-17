@@ -1,7 +1,7 @@
-﻿using System.Linq;
+﻿using Xunit;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RestingMovies.Api.Entities;
 using RestingMovies.Api.Persistence;
 using RestingMovies.Api.Repositories;
@@ -9,7 +9,6 @@ using FluentAssertions;
 
 namespace RestingMovies.Tests.Repositories;
 
-[TestClass]
 public class RatingRepositoryTests
 {
     private readonly DbContextOptions<RestingMoviesDbContext> _dbContextOptions;
@@ -28,7 +27,7 @@ public class RatingRepositoryTests
         return new RatingRepository(dbContext);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task RatingRepository_ShouldSaveRating()
     {
         var ratingsDbContext = new RestingMoviesDbContext(_dbContextOptions);
@@ -41,7 +40,7 @@ public class RatingRepositoryTests
         rating.Id.Should().BeGreaterThan(0);
     }
     
-    [TestMethod]
+    [Fact]
     public async Task RatingRepository_ShouldGetAllRatings()
     {
         var ratingsDbContext = new RestingMoviesDbContext(_dbContextOptions);
