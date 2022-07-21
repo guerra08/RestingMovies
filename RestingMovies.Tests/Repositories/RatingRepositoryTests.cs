@@ -55,4 +55,60 @@ public class RatingRepositoryTests
         
         ratings.Count.Should().BeGreaterThan(0);
     }
+
+    [Fact]
+    public async Task RatingRepository_ShouldDeleteRating()
+    {
+        var ratingsDbContext = new RestingMoviesDbContext(_dbContextOptions);
+        var repository = GetRatingRepository(ratingsDbContext);
+        
+        var rating = new Rating { Score = 5, Text = "An example!", MovieId = 1 };
+        
+        await ratingsDbContext.AddAsync(rating);
+        await ratingsDbContext.SaveChangesAsync();
+        
+        await repository.DeleteRating(rating);
+
+        var count = await ratingsDbContext.Ratings.CountAsync();
+
+        count.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task RatingRepository_ShouldGetRatingsByMovieId()
+    {
+        var ratingsDbContext = new RestingMoviesDbContext(_dbContextOptions);
+        var repository = GetRatingRepository(ratingsDbContext);
+        
+        var firstRating = new Rating { Score = 5, Text = "An example!", MovieId = 1 };
+        var secondRating = new Rating { Score = 7, Text = "Nice!", MovieId = 2 };
+        var thirdRating = new Rating { Score = 6, Text = "Meh!", MovieId = 2 };
+
+        await ratingsDbContext.AddRangeAsync(firstRating, secondRating, thirdRating);
+        await ratingsDbContext.SaveChangesAsync();
+
+        var ratingsOfMovieId2 = await repository.GetRatingsByMovieId(2);
+
+        foreach (var rating in ratingsOfMovieId2)
+        {
+            rating.MovieId.Should().Be(2);
+        }
+    }
+
+    [Fact]
+    public async Task RatingRepository_ShouldGetRatingById()
+    {
+        var ratingsDbContext = new RestingMoviesDbContext(_dbContextOptions);
+        var repository = GetRatingRepository(ratingsDbContext);
+        
+        var rating = new Rating { Score = 5, Text = "An example!", MovieId = 1 };
+
+        await ratingsDbContext.AddAsync(rating);
+        await ratingsDbContext.SaveChangesAsync();
+
+        var ratingFromDb = await repository.GetRatingById(rating.Id);
+
+        ratingFromDb?.Should().NotBeNull();
+        ratingFromDb?.Id.Should().Be(rating.Id);
+    }
 }

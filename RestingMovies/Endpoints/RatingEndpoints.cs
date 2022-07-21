@@ -28,6 +28,8 @@ public class RatingEndpoints : IEndpointConfiguration
 
         app.MapGet("/ratings/movie/{id}", HandleGetRatingsOfMovie)
             .WithName("GetRatingsOfMovie");
+
+        app.MapGet("/ratings/{id}", HandleGetRatingById);
     }
 
     internal async Task<IResult> HandlePostRating(IRatingRepository ratingRepository,
@@ -48,5 +50,14 @@ public class RatingEndpoints : IEndpointConfiguration
     {
         var ratings = await ratingRepository.GetRatingsByMovieId(movieId);
         return Results.Ok(ratings.Select(x => x.ToRatingResponse()));
+    }
+
+    internal async Task<IResult> HandleGetRatingById(IRatingRepository ratingRepository, int ratingId)
+    {
+        return await ratingRepository.GetRatingById(ratingId) switch
+        {
+            { } rating => Results.Ok(rating.ToRatingResponse()),
+            null => Results.NotFound()
+        };
     }
 }

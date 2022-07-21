@@ -69,7 +69,7 @@ public class MovieRepositoryTests
 
         var foundMovie = await repository.GetMovieById(movie.Id);
 
-        foundMovie.Should().NotBeNull();
+        foundMovie?.Should().NotBeNull();
         foundMovie?.Id.Should().Be(movie.Id);
     }
 
