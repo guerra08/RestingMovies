@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RestingMovies.Api.Contracts.Requests;
-using RestingMovies.Api.Mappings;
 using RestingMovies.Api.Persistence;
 using RestingMovies.Api.Repositories;
+using RestingMovies.Api.Services;
 
 namespace RestingMovies.Api.Endpoints;
 
@@ -16,6 +16,7 @@ public class RatingEndpoints : IEndpointConfiguration
                 c.UseSqlite("Data Source=restingmovies.db");
             });
         services.AddTransient<IRatingRepository, RatingRepository>();
+        services.AddTransient<IRatingService, RatingService>();
     }
 
     public void MapEndpoints(WebApplication app)
@@ -32,31 +33,30 @@ public class RatingEndpoints : IEndpointConfiguration
         app.MapGet("/ratings/{id}", HandleGetRatingById);
     }
 
-    internal async Task<IResult> HandlePostRating(IRatingRepository ratingRepository,
+    internal async Task<IResult> HandlePostRating(IRatingService ratingService,
         CreateRatingRequest request)
     {
-        var rating = request.ToRating();
-        await ratingRepository.SaveRating(rating);
-        return Results.Created($"/rating/{rating.Id}", rating.ToRatingResponse());
+        var response = await ratingService.Create(request);
+        return Results.Created($"/rating/{response.Id}", response);
     }
 
-    internal async Task<IResult> HandleGetRatings(IRatingRepository ratingRepository)
+    internal async Task<IResult> HandleGetRatings(IRatingService ratingService)
     {
-        var ratings = await ratingRepository.GetAllRatings();
-        return Results.Ok(ratings.Select(x => x.ToRatingResponse()));
+        var ratings = await ratingService.GetAll();
+        return Results.Ok(ratings);
     }
 
-    internal async Task<IResult> HandleGetRatingsOfMovie(IRatingRepository ratingRepository, int movieId)
+    internal async Task<IResult> HandleGetRatingsOfMovie(IRatingService ratingService, int movieId)
     {
-        var ratings = await ratingRepository.GetRatingsByMovieId(movieId);
-        return Results.Ok(ratings.Select(x => x.ToRatingResponse()));
+        var ratings = await ratingService.GetByMovieId(movieId);
+        return Results.Ok(ratings);
     }
 
-    internal async Task<IResult> HandleGetRatingById(IRatingRepository ratingRepository, int ratingId)
+    internal async Task<IResult> HandleGetRatingById(IRatingService ratingService, int ratingId)
     {
-        return await ratingRepository.GetRatingById(ratingId) switch
+        return await ratingService.GetById(ratingId) switch
         {
-            { } rating => Results.Ok(rating.ToRatingResponse()),
+            { } ratingResponse => Results.Ok(ratingResponse),
             null => Results.NotFound()
         };
     }
