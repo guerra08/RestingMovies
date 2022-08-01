@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RestingMovies.Api.Contracts.Requests;
-using RestingMovies.Api.Mappings;
 using RestingMovies.Api.Persistence;
 using RestingMovies.Api.Repositories;
+using RestingMovies.Api.Services;
 
 namespace RestingMovies.Api.Endpoints;
 
@@ -16,6 +16,7 @@ public class MovieEndpoints : IEndpointConfiguration
                 c.UseSqlite("Data Source=restingmovies.db");
             });
         services.AddTransient<IMovieRepository, MovieRepository>();
+        services.AddTransient<IMovieService, MovieService>();
     }
 
     public void MapEndpoints(WebApplication app)
@@ -33,33 +34,30 @@ public class MovieEndpoints : IEndpointConfiguration
             .WithName("DeleteMovieById");
     }
     
-    internal async Task<IResult> HandlePostMovie(IMovieRepository movieRepository, CreateMovieRequest request)
+    internal async Task<IResult> HandlePostMovie(IMovieService movieService, CreateMovieRequest request)
     {
-        var movie = request.ToMovie();
-        await movieRepository.SaveMovie(movie);
-        return Results.Created($"/movie/{movie.Id}", movie.ToMovieResponse());
+        var movieResponse = await movieService.Create(request);
+        return Results.Created($"/movie/{movieResponse.Id}", movieResponse);
     }
 
-    internal async Task<IResult> HandleGetMovies(IMovieRepository movieRepository, string? name)
+    internal async Task<IResult> HandleGetMovies(IMovieService movieService, string? name)
     {
-        var movies = name is null ? await movieRepository.GetAllMovies() : await movieRepository.GetMoviesByName(name);
-        return Results.Ok(movies.Select(m => m.ToMovieResponse()));
+        var movies = await movieService.GetAll(name);
+        return Results.Ok(movies);
     }
 
-    internal async Task<IResult> HandleGetMovieById(IMovieRepository movieRepository, int id)
+    internal async Task<IResult> HandleGetMovieById(IMovieService movieService, int id)
     {
-        return await movieRepository.GetMovieById(id) switch
+        return await movieService.GetById(id) switch
         {
-            { } movie => Results.Ok(movie.ToMovieResponse()),
+            { } movieResponse => Results.Ok(movieResponse),
             null => Results.NotFound()
         };
     }
 
-    internal async Task<IResult> HandleDeleteMovieById(IMovieRepository movieRepository, int id)
+    internal async Task<IResult> HandleDeleteMovieById(IMovieService movieService, int id)
     {
-        var movie = await movieRepository.GetMovieById(id);
-        if (movie is null) return Results.NotFound();
-        await movieRepository.DeleteMovie(movie);
-        return Results.NoContent();
+        var deleted = await movieService.DeleteById(id);
+        return deleted ? Results.NoContent() : Results.NotFound();
     }
 }
