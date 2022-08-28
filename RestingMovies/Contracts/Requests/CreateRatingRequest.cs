@@ -1,8 +1,8 @@
 ﻿namespace RestingMovies.Api.Contracts.Requests;
 
-public class CreateRatingRequest
+public record CreateRatingRequest
 {
     public int Score { get; init; }
-    public string Text { get; init; } = default!;
+    public string Text { get; init; }
     public int MovieId { get; init; }
 }

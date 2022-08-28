@@ -1,9 +1,9 @@
 ﻿namespace RestingMovies.Api.Contracts.Responses;
 
-public class RatingResponse
+public record RatingResponse
 {
-    public int Id { get; set; }
-    public int Score { get; set; }
-    public string Text { get; set; } = default!;
-    public int MovieId { get; set; }
+    public int Id { get; init; }
+    public int Score { get; init; }
+    public string Text { get; init; }
+    public int MovieId { get; init; }
 }

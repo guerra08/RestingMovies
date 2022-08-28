@@ -1,9 +1,9 @@
 ﻿namespace RestingMovies.Api.Contracts.Requests;
 
-public class CreateMovieRequest
+public record CreateMovieRequest
 {
-    public string Name { get; init; } = default!;
-    public string Director { get; init; } = default!;
-    public string Genre { get; init; } = default!;
-    public int ReleaseYear { get; init; } = default!;
+    public string Name { get; init; }
+    public string Director { get; init; }
+    public string Genre { get; init; }
+    public int ReleaseYear { get; init; }
 }
