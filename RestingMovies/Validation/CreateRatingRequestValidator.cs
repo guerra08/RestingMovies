@@ -16,5 +16,12 @@ public class CreateRatingRequestValidator : AbstractValidator<CreateRatingReques
         RuleFor(x => x.MovieId)
             .NotNull()
             .WithMessage("Rating must contain movie id");
+
+        RuleFor(x => x.Score)
+            .LessThanOrEqualTo(5)
+            .WithMessage("Score must be smaller or equal to 5");
+        RuleFor(x => x.Score)
+            .GreaterThan(0)
+            .WithMessage("Score must be greater than 0");
     }
 }
