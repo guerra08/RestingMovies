@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using RestingMovies.Api.Contracts.Requests;
 using RestingMovies.Api.Persistence;
 using RestingMovies.Api.Repositories;
 using RestingMovies.Api.Services;
+using RestingMovies.Api.Validation;
 
 namespace RestingMovies.Api.Endpoints;
 
@@ -15,6 +17,7 @@ public class MovieEndpoints : IEndpointConfiguration
             {
                 c.UseSqlite("Data Source=restingmovies.db");
             });
+        services.AddScoped<IValidator<CreateMovieRequest>, CreateMovieRequestValidator>();
         services.AddTransient<IMovieRepository, MovieRepository>();
         services.AddTransient<IMovieService, MovieService>();
     }
@@ -34,8 +37,16 @@ public class MovieEndpoints : IEndpointConfiguration
             .WithName("DeleteMovieById");
     }
     
-    internal async Task<IResult> HandlePostMovie(IMovieService movieService, CreateMovieRequest request)
+    internal async Task<IResult> HandlePostMovie(
+        IMovieService movieService,
+        IValidator<CreateMovieRequest> validator,
+        CreateMovieRequest request)
     {
+        var validationResult = await validator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary());
+        }
         var movieResponse = await movieService.Create(request);
         return Results.Created($"/movie/{movieResponse.Id}", movieResponse);
     }
