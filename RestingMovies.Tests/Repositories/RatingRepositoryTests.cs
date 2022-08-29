@@ -11,31 +11,26 @@ namespace RestingMovies.Tests.Repositories;
 
 public class RatingRepositoryTests
 {
-    private readonly DbContextOptions<RestingMoviesDbContext> _dbContextOptions;
+    private readonly RestingMoviesDbContext _ratingsDbContext;
+    private readonly IRatingRepository _sut;
 
     public RatingRepositoryTests()
     {
-        _dbContextOptions = new DbContextOptionsBuilder<RestingMoviesDbContext>()
+        var dbContextOptions = new DbContextOptionsBuilder<RestingMoviesDbContext>()
             .UseInMemoryDatabase("RestingMovies_Tests")
             .Options;
-    }
-
-    private IRatingRepository GetRatingRepository(RestingMoviesDbContext dbContext)
-    {
-        dbContext.Database.EnsureDeleted();
-        dbContext.Database.EnsureCreated();
-        return new RatingRepository(dbContext);
+        _ratingsDbContext = new RestingMoviesDbContext(dbContextOptions);
+        _ratingsDbContext.Database.EnsureDeleted();
+        _ratingsDbContext.Database.EnsureCreated();
+        _sut = new RatingRepository(_ratingsDbContext);
     }
 
     [Fact]
     public async Task RatingRepository_ShouldSaveRating()
     {
-        var ratingsDbContext = new RestingMoviesDbContext(_dbContextOptions);
-        var repository = GetRatingRepository(ratingsDbContext);
-
         var rating = new Rating { Score = 5, Text = "Very nice!", MovieId = 1 };
 
-        await repository.SaveRating(rating);
+        await _sut.SaveRating(rating);
 
         rating.Id.Should().BeGreaterThan(0);
     }
@@ -43,15 +38,12 @@ public class RatingRepositoryTests
     [Fact]
     public async Task RatingRepository_ShouldGetAllRatings()
     {
-        var ratingsDbContext = new RestingMoviesDbContext(_dbContextOptions);
-        var repository = GetRatingRepository(ratingsDbContext);
-
         var rating = new Rating { Score = 5, Text = "Very nice!", MovieId = 1 };
 
-        await ratingsDbContext.AddAsync(rating);
-        await ratingsDbContext.SaveChangesAsync();
+        await _ratingsDbContext.AddAsync(rating);
+        await _ratingsDbContext.SaveChangesAsync();
 
-        var ratings = (await repository.GetAllRatings()).ToList();
+        var ratings = (await _sut.GetAllRatings()).ToList();
         
         ratings.Count.Should().BeGreaterThan(0);
     }
@@ -59,17 +51,14 @@ public class RatingRepositoryTests
     [Fact]
     public async Task RatingRepository_ShouldDeleteRating()
     {
-        var ratingsDbContext = new RestingMoviesDbContext(_dbContextOptions);
-        var repository = GetRatingRepository(ratingsDbContext);
-        
         var rating = new Rating { Score = 5, Text = "An example!", MovieId = 1 };
         
-        await ratingsDbContext.AddAsync(rating);
-        await ratingsDbContext.SaveChangesAsync();
+        await _ratingsDbContext.AddAsync(rating);
+        await _ratingsDbContext.SaveChangesAsync();
         
-        await repository.DeleteRating(rating);
+        await _sut.DeleteRating(rating);
 
-        var count = await ratingsDbContext.Ratings.CountAsync();
+        var count = await _ratingsDbContext.Ratings.CountAsync();
 
         count.Should().Be(0);
     }
@@ -77,17 +66,14 @@ public class RatingRepositoryTests
     [Fact]
     public async Task RatingRepository_ShouldGetRatingsByMovieId()
     {
-        var ratingsDbContext = new RestingMoviesDbContext(_dbContextOptions);
-        var repository = GetRatingRepository(ratingsDbContext);
-        
         var firstRating = new Rating { Score = 5, Text = "An example!", MovieId = 1 };
         var secondRating = new Rating { Score = 7, Text = "Nice!", MovieId = 2 };
         var thirdRating = new Rating { Score = 6, Text = "Meh!", MovieId = 2 };
 
-        await ratingsDbContext.AddRangeAsync(firstRating, secondRating, thirdRating);
-        await ratingsDbContext.SaveChangesAsync();
+        await _ratingsDbContext.AddRangeAsync(firstRating, secondRating, thirdRating);
+        await _ratingsDbContext.SaveChangesAsync();
 
-        var ratingsOfMovieId2 = await repository.GetRatingsByMovieId(2);
+        var ratingsOfMovieId2 = await _sut.GetRatingsByMovieId(2);
 
         foreach (var rating in ratingsOfMovieId2)
         {
@@ -98,15 +84,12 @@ public class RatingRepositoryTests
     [Fact]
     public async Task RatingRepository_ShouldGetRatingById()
     {
-        var ratingsDbContext = new RestingMoviesDbContext(_dbContextOptions);
-        var repository = GetRatingRepository(ratingsDbContext);
-        
         var rating = new Rating { Score = 5, Text = "An example!", MovieId = 1 };
 
-        await ratingsDbContext.AddAsync(rating);
-        await ratingsDbContext.SaveChangesAsync();
+        await _ratingsDbContext.AddAsync(rating);
+        await _ratingsDbContext.SaveChangesAsync();
 
-        var ratingFromDb = await repository.GetRatingById(rating.Id);
+        var ratingFromDb = await _sut.GetRatingById(rating.Id);
 
         ratingFromDb?.Should().NotBeNull();
         ratingFromDb?.Id.Should().Be(rating.Id);

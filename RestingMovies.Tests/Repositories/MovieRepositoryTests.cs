@@ -12,28 +12,23 @@ namespace RestingMovies.Tests.Repositories;
 
 public class MovieRepositoryTests
 {
-    private readonly DbContextOptions<RestingMoviesDbContext> _dbContextOptions;
+    private readonly RestingMoviesDbContext _moviesDbContext;
+    private readonly IMovieRepository _sut;
 
     public MovieRepositoryTests()
     {
-        _dbContextOptions = new DbContextOptionsBuilder<RestingMoviesDbContext>()
+        var dbContextOptions = new DbContextOptionsBuilder<RestingMoviesDbContext>()
             .UseInMemoryDatabase("RestingMovies_Tests")
             .Options;
-    }
-
-    private IMovieRepository GetMovieRepository(RestingMoviesDbContext dbContext)
-    {
-        dbContext.Database.EnsureDeleted();
-        dbContext.Database.EnsureCreated();
-        return new MovieRepository(dbContext);
+        _moviesDbContext = new RestingMoviesDbContext(dbContextOptions);
+        _moviesDbContext.Database.EnsureDeleted();
+        _moviesDbContext.Database.EnsureCreated();
+        _sut = new MovieRepository(_moviesDbContext);
     }
 
     [Fact]
     public async Task MovieRepository_ShouldSaveMovie()
     {
-        var moviesDbContext = new RestingMoviesDbContext(_dbContextOptions);
-        var repository = GetMovieRepository(moviesDbContext);
-
         var movie = new Movie
         {
             Name = "Saving Private Ryan",
@@ -42,7 +37,7 @@ public class MovieRepositoryTests
             ReleaseYear = 1998
         };
 
-        await repository.SaveMovie(movie);
+        await _sut.SaveMovie(movie);
 
         movie.Name.Should().Be("Saving Private Ryan");
         movie.Director.Should().Be("Steven Spielberg");
@@ -53,9 +48,6 @@ public class MovieRepositoryTests
     [Fact]
     public async Task MovieRepository_ShouldGetById()
     {
-        var moviesDbContext = new RestingMoviesDbContext(_dbContextOptions);
-        var repository = GetMovieRepository(moviesDbContext);
-
         var movie = new Movie
         {
             Name = "Saving Private Ryan",
@@ -64,10 +56,10 @@ public class MovieRepositoryTests
             ReleaseYear = 1998
         };
 
-        await moviesDbContext.Movies.AddAsync(movie);
-        await moviesDbContext.SaveChangesAsync();
+        await _moviesDbContext.Movies.AddAsync(movie);
+        await _moviesDbContext.SaveChangesAsync();
 
-        var foundMovie = await repository.GetMovieById(movie.Id);
+        var foundMovie = await _sut.GetMovieById(movie.Id);
 
         foundMovie?.Should().NotBeNull();
         foundMovie?.Id.Should().Be(movie.Id);
@@ -76,19 +68,16 @@ public class MovieRepositoryTests
     [Fact]
     public async Task MovieRepository_ShouldGetAllMovies()
     {
-        var moviesDbContext = new RestingMoviesDbContext(_dbContextOptions);
-        var repository = GetMovieRepository(moviesDbContext);
-
         var movies = new List<Movie>
         {
             new() { Name = "First", Director = "Myself", Genre = "Action", ReleaseYear = 2022 },
             new() { Name = "Second", Director = "Myself", Genre = "Action", ReleaseYear = 2023 }
         };
 
-        await moviesDbContext.Movies.AddRangeAsync(movies);
-        await moviesDbContext.SaveChangesAsync();
+        await _moviesDbContext.Movies.AddRangeAsync(movies);
+        await _moviesDbContext.SaveChangesAsync();
 
-        var moviesFromDb = await repository.GetAllMovies();
+        var moviesFromDb = await _sut.GetAllMovies();
 
         moviesFromDb.ToList().Count.Should().Be(2);
     }
@@ -96,19 +85,16 @@ public class MovieRepositoryTests
     [Fact]
     public async Task MovieRepository_ShouldGetAllMoviesByName()
     {
-        var moviesDbContext = new RestingMoviesDbContext(_dbContextOptions);
-        var repository = GetMovieRepository(moviesDbContext);
-
         var movies = new List<Movie>
         {
             new() { Name = "First", Director = "Myself", Genre = "Action", ReleaseYear = 2022 },
             new() { Name = "Second", Director = "Myself", Genre = "Action", ReleaseYear = 2023 }
         };
 
-        await moviesDbContext.Movies.AddRangeAsync(movies);
-        await moviesDbContext.SaveChangesAsync();
+        await _moviesDbContext.Movies.AddRangeAsync(movies);
+        await _moviesDbContext.SaveChangesAsync();
 
-        var moviesFromDb = (await repository.GetMoviesByName("first")).ToList();
+        var moviesFromDb = (await _sut.GetMoviesByName("first")).ToList();
         var foundMovie = moviesFromDb[0];
         
         moviesFromDb.Count.Should().Be(1);
@@ -119,9 +105,6 @@ public class MovieRepositoryTests
     [Fact]
     public async Task MovieRepository_ShouldDeleteMovie()
     {
-        var moviesDbContext = new RestingMoviesDbContext(_dbContextOptions);
-        var repository = GetMovieRepository(moviesDbContext);
-
         var movie = new Movie
         {
             Name = "Saving Private Ryan",
@@ -130,12 +113,12 @@ public class MovieRepositoryTests
             ReleaseYear = 1998
         };
 
-        await moviesDbContext.Movies.AddAsync(movie);
-        await moviesDbContext.SaveChangesAsync();
+        await _moviesDbContext.Movies.AddAsync(movie);
+        await _moviesDbContext.SaveChangesAsync();
 
-        await repository.DeleteMovie(movie);
+        await _sut.DeleteMovie(movie);
 
-        var count = await moviesDbContext.Movies.CountAsync();
+        var count = await _moviesDbContext.Movies.CountAsync();
 
         count.Should().Be(0);
     }
