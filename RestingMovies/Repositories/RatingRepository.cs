@@ -7,12 +7,12 @@ namespace RestingMovies.Api.Repositories;
 public class RatingRepository : IRatingRepository
 {
     private readonly RestingMoviesDbContext _dbContext;
-    
+
     public RatingRepository(RestingMoviesDbContext dbContext)
     {
         _dbContext = dbContext;
     }
-    
+
     public async Task<IEnumerable<Rating>> GetAllRatings()
     {
         return await _dbContext.Ratings.ToListAsync();

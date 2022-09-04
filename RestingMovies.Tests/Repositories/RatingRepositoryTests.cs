@@ -1,11 +1,9 @@
-﻿using Xunit;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RestingMovies.Api.Entities;
 using RestingMovies.Api.Persistence;
 using RestingMovies.Api.Repositories;
-using FluentAssertions;
 
 namespace RestingMovies.Tests.Repositories;
 
@@ -34,7 +32,7 @@ public class RatingRepositoryTests
 
         rating.Id.Should().BeGreaterThan(0);
     }
-    
+
     [Fact]
     public async Task RatingRepository_ShouldGetAllRatings()
     {
@@ -44,7 +42,7 @@ public class RatingRepositoryTests
         await _ratingsDbContext.SaveChangesAsync();
 
         var ratings = (await _sut.GetAllRatings()).ToList();
-        
+
         ratings.Count.Should().BeGreaterThan(0);
     }
 
@@ -52,10 +50,10 @@ public class RatingRepositoryTests
     public async Task RatingRepository_ShouldDeleteRating()
     {
         var rating = new Rating { Score = 5, Text = "An example!", MovieId = 1 };
-        
+
         await _ratingsDbContext.AddAsync(rating);
         await _ratingsDbContext.SaveChangesAsync();
-        
+
         await _sut.DeleteRating(rating);
 
         var count = await _ratingsDbContext.Ratings.CountAsync();
@@ -75,10 +73,7 @@ public class RatingRepositoryTests
 
         var ratingsOfMovieId2 = await _sut.GetRatingsByMovieId(2);
 
-        foreach (var rating in ratingsOfMovieId2)
-        {
-            rating.MovieId.Should().Be(2);
-        }
+        foreach (var rating in ratingsOfMovieId2) rating.MovieId.Should().Be(2);
     }
 
     [Fact]

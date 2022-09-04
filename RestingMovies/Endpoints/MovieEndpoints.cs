@@ -13,10 +13,7 @@ public class MovieEndpoints : IEndpointConfiguration
     public void AddServices(IServiceCollection services)
     {
         services.AddDbContext<RestingMoviesDbContext>(
-            c =>
-            {
-                c.UseSqlite("Data Source=restingmovies.db");
-            });
+            c => { c.UseSqlite("Data Source=restingmovies.db"); });
         services.AddScoped<IValidator<CreateMovieRequest>, CreateMovieRequestValidator>();
         services.AddTransient<IMovieRepository, MovieRepository>();
         services.AddTransient<IMovieService, MovieService>();
@@ -36,17 +33,14 @@ public class MovieEndpoints : IEndpointConfiguration
         app.MapDelete("/movies/{id}", HandleDeleteMovieById)
             .WithName("DeleteMovieById");
     }
-    
+
     internal async Task<IResult> HandlePostMovie(
         IMovieService movieService,
         IValidator<CreateMovieRequest> validator,
         CreateMovieRequest request)
     {
         var validationResult = await validator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            return Results.ValidationProblem(validationResult.ToDictionary());
-        }
+        if (!validationResult.IsValid) return Results.ValidationProblem(validationResult.ToDictionary());
         var movieResponse = await movieService.Create(request);
         return Results.Created($"/movie/{movieResponse.Id}", movieResponse);
     }

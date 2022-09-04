@@ -13,10 +13,7 @@ public class RatingEndpoints : IEndpointConfiguration
     public void AddServices(IServiceCollection services)
     {
         services.AddDbContext<RestingMoviesDbContext>(
-            c =>
-            {
-                c.UseSqlite("Data Source=restingmovies.db");
-            });
+            c => { c.UseSqlite("Data Source=restingmovies.db"); });
         services.AddScoped<IValidator<CreateRatingRequest>, CreateRatingRequestValidator>();
         services.AddTransient<IRatingRepository, RatingRepository>();
         services.AddTransient<IRatingService, RatingService>();
@@ -42,10 +39,7 @@ public class RatingEndpoints : IEndpointConfiguration
         CreateRatingRequest request)
     {
         var validationResult = await validator.ValidateAsync(request);
-        if (!validationResult.IsValid)
-        {
-            return Results.ValidationProblem(validationResult.ToDictionary());
-        }
+        if (!validationResult.IsValid) return Results.ValidationProblem(validationResult.ToDictionary());
         var response = await ratingService.Create(request);
         return Results.Created($"/rating/{response.Id}", response);
     }

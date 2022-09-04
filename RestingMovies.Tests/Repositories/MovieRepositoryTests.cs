@@ -1,12 +1,10 @@
-﻿using Xunit;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RestingMovies.Api.Entities;
 using RestingMovies.Api.Persistence;
 using RestingMovies.Api.Repositories;
-using FluentAssertions;
 
 namespace RestingMovies.Tests.Repositories;
 
@@ -96,7 +94,7 @@ public class MovieRepositoryTests
 
         var moviesFromDb = (await _sut.GetMoviesByName("first")).ToList();
         var foundMovie = moviesFromDb[0];
-        
+
         moviesFromDb.Count.Should().Be(1);
         foundMovie.Should().NotBeNull();
         foundMovie.Name.Should().Be("First");

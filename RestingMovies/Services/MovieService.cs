@@ -13,7 +13,7 @@ public class MovieService : IMovieService
     {
         _movieRepository = movieRepository;
     }
-    
+
     public async Task<MovieResponse> Create(CreateMovieRequest createMovieRequest)
     {
         var movie = createMovieRequest.ToMovie();
@@ -23,7 +23,9 @@ public class MovieService : IMovieService
 
     public async Task<IList<MovieResponse>> GetAll(string? name)
     {
-        var movies = name is null ? await _movieRepository.GetAllMovies() : await _movieRepository.GetMoviesByName(name);
+        var movies = name is null
+            ? await _movieRepository.GetAllMovies()
+            : await _movieRepository.GetMoviesByName(name);
         return movies.Select(x => x.ToMovieResponse()).ToList();
     }
 

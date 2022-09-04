@@ -5,7 +5,6 @@ namespace RestingMovies.Api.Mappings;
 
 public static class RequestsToEntities
 {
-
     public static Movie ToMovie(this CreateMovieRequest req)
     {
         return new Movie
@@ -26,5 +25,4 @@ public static class RequestsToEntities
             MovieId = req.MovieId
         };
     }
-    
 }

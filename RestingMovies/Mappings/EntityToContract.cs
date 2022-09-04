@@ -5,7 +5,6 @@ namespace RestingMovies.Api.Mappings;
 
 public static class EntityToContract
 {
-
     public static MovieResponse ToMovieResponse(this Movie movie)
     {
         return new MovieResponse
@@ -16,7 +15,6 @@ public static class EntityToContract
             Genre = movie.Genre,
             ReleaseYear = movie.ReleaseYear
         };
-
     }
 
     public static RatingResponse ToRatingResponse(this Rating rating)

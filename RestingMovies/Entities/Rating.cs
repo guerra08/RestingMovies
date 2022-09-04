@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace RestingMovies.Api.Entities;
+﻿namespace RestingMovies.Api.Entities;
 
 public class Rating
 {
