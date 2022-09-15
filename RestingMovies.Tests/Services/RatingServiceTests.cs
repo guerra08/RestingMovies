@@ -80,8 +80,8 @@ public class RatingServiceTests
 
         var result = await _sut.GetById(1);
 
-        rating.Should().NotBe(null);
-
+        result.Should().NotBe(null);
+        result.Text.Should().Be(rating.Text);
     }
 
     [Fact]
