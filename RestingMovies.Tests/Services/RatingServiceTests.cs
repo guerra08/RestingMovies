@@ -28,9 +28,10 @@ public class RatingServiceTests
             .RuleFor(x => x.Text, f => f.Lorem.Sentence())
             .RuleFor(x => x.Score, 5);
         _ratingFaker
-            .RuleFor(x => x.MovieId, f => f.IndexFaker)
+            .RuleFor(x => x.Id, f => f.IndexFaker)
             .RuleFor(x => x.Text, f => f.Lorem.Sentence())
-            .RuleFor(x => x.Score, 5);
+            .RuleFor(x => x.Score, 5)
+            .RuleFor(x => x.MovieId, 1);
     }
 
     [Fact]
@@ -81,5 +82,36 @@ public class RatingServiceTests
 
         rating.Should().NotBe(null);
 
+    }
+
+    [Fact]
+    public async Task GetById_ShouldReturnNullIfItDoesNotExists()
+    {
+
+        _ratingRepository
+            .Setup(x => x.GetRatingById(It.IsAny<int>())).Returns(Task.FromResult<Rating?>(null));
+
+        var result = await _sut.GetById(1);
+
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetByMovieId_ShouldReturnRatingsOfSpecificMovie()
+    {
+
+        IEnumerable<Rating> ratings = new List<Rating>
+        {
+            _ratingFaker.Generate(),
+            _ratingFaker.Generate(),
+            _ratingFaker.Generate()
+        };
+
+        _ratingRepository
+            .Setup(x => x.GetRatingsByMovieId(It.IsAny<int>())).Returns(Task.FromResult(ratings));
+
+        var result = (await _sut.GetByMovieId(1)).ToList();
+
+        result.Count.Should().Be(3);
     }
 }
