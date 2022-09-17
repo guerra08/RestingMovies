@@ -114,4 +114,33 @@ public class RatingServiceTests
 
         result.Count.Should().Be(3);
     }
+
+    [Fact]
+    public async Task DeleteById_ShouldReturnTrueIfDeleted()
+    {
+
+        var rating = _ratingFaker.Generate();
+        var id = 1;
+
+        _ratingRepository
+            .Setup(x => x.GetRatingById(id)).Returns(Task.FromResult<Rating?>(rating));
+
+        var result = await _sut.DeleteById(id);
+
+        result.Should().Be(true);
+    }
+    
+    [Fact]
+    public async Task DeleteById_ShouldReturnFalseIfNotDeleted()
+    {
+        
+        var id = 1;
+
+        _ratingRepository
+            .Setup(x => x.GetRatingById(id)).Returns(Task.FromResult<Rating?>(null));
+
+        var result = await _sut.DeleteById(id);
+
+        result.Should().Be(false);
+    }
 }
